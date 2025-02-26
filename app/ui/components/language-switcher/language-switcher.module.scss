@@ -1,0 +1,67 @@
+// Variables
+$border-light: #ced4da;
+$bg-light: #f8f9fa;
+$focus-border-light: #80bdff;
+$focus-shadow-light: rgba(0, 123, 255, 0.25);
+$hover-bg-light: #e9ecef;
+
+$bg-dark: #343a40;
+$border-dark: #495057;
+$text-dark: #f8f9fa;
+$hover-bg-dark: #495057;
+$focus-border-dark: #6c757d;
+$focus-shadow-dark: rgba(130, 138, 145, 0.25);
+
+.languageSwitcher {
+  border-radius: 6px;
+  border: 1px solid $border-light;
+  padding: 8px 30px 8px 12px;
+  font-size: 0.875rem;
+  background-color: $bg-light;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  height: 42px; // Match the height of buttons
+  align-self: flex-start; // Align at the top
+  
+  &:focus {
+    border-color: $focus-border-light;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem $focus-shadow-light;
+  }
+  
+  &:hover {
+    background-color: $hover-bg-light;
+  }
+  
+  // Dark mode support
+  @media (prefers-color-scheme: dark) {
+    background-color: $bg-dark;
+    border-color: $border-dark;
+    color: $text-dark;
+    
+    &:hover {
+      background-color: $hover-bg-dark;
+    }
+    
+    &:focus {
+      border-color: $focus-border-dark;
+      box-shadow: 0 0 0 0.2rem $focus-shadow-dark;
+    }
+  }
+  
+  // Mobile Responsiveness
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+    padding: 10px 30px 10px 12px;
+    font-size: 1rem;
+  }
+  
+  // Small mobile devices
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    padding: 8px 25px 8px 10px;
+  }
+} 

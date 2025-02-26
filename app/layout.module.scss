@@ -1,0 +1,30 @@
+// Container for buttons on mobile
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start; // Align items at the top
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+// Header container for buttons and language selector
+.headerContainer {
+  margin-top: 10px;
+  margin-right: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; // Align items at the top
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 10px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+  }
+} 
