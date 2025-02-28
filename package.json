@@ -10,13 +10,20 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
-        "obfuscator-config-file": "npx tsc --esModuleInterop --module commonjs configs/config-obfuscator.ts && node configs/config-obfuscator.js"
+        "obfuscator-config-file": "npx tsc --esModuleInterop --module commonjs configs/config-obfuscator.ts && node configs/config-obfuscator.js",
+        "generate-cert": "node generate-cert.js",
+        "dev:https": "npm run generate-cert && node server.js"
     },
     "dependencies": {
+        "@telegram-apps/bridge": "^2.4.0",
+        "@telegram-apps/init-data-node": "^2.0.3",
+        "@telegram-apps/sdk": "^3.5.1",
+        "@telegram-apps/sdk-react": "^3.1.2",
         "next": "15.1.7",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "sass": "^1.85.1",
+        "selfsigned": "^2.1.1",
         "styled-components": "^6.1.15"
     },
     "devDependencies": {

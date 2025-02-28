@@ -25,7 +25,7 @@ export function useTelegramUser() {
         try {
             // Get user data from Telegram Web App
             const userData = getTelegramUser();
-            console.log(userData);
+            // alert(JSON.stringify(userData));
             setUser(userData);
         } catch (err) {
             setError(err instanceof Error ? err : new Error("Failed to get Telegram user data"));
