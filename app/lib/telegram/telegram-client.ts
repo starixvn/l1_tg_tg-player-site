@@ -22,9 +22,9 @@ export interface ExtendedTelegramWebAppData {
         authDate: string;
         chatType?: string;
         chatInstance?: string;
-        hash?: string;
+        hash: string;
         signature?: string;
-        user?: User;
+        user: User;
     };
     tgWebAppPlatform?: string;
     tgWebAppThemeParams?: {
@@ -98,6 +98,10 @@ export async function getExtendedTelegramData(): Promise<ExtendedTelegramWebAppD
 
         // Format auth_date as ISO string if available
         const authDate = tgWebAppData.authDate;
+
+        if (!tgWebAppData.user) {
+            return null;
+        }
 
         return {
             tgWebAppData: {

@@ -18,9 +18,23 @@ export type Resources = {
             back: string;
             placeholder: string;
         };
+        invite: {
+            title: string;
+            back: string;
+            referralCode: string;
+            referralLink: string;
+            copy: string;
+            yourCode: string;
+            yourLink: string;
+            rewards: {
+                title: string;
+                description: string;
+            };
+        };
         buttons: {
             deposit: string;
             withdraw: string;
+            invite: string;
         };
         languages: {
             english: string;
@@ -47,9 +61,24 @@ export const resources: Resources = {
             back: "Back",
             placeholder: "Enter amount",
         },
+        invite: {
+            title: "Invite Friends",
+            back: "Back",
+            referralCode: "Your Referral Code",
+            referralLink: "Your Referral Link",
+            copy: "Copy",
+            yourCode: "ABC123",
+            yourLink: "https://example.com/ref/ABC123",
+            rewards: {
+                title: "Referral Rewards",
+                description:
+                    "Invite your friends and earn rewards! For each friend who joins and makes their first deposit, you'll receive a bonus.",
+            },
+        },
         buttons: {
             deposit: "Deposit",
             withdraw: "Withdraw",
+            invite: "Invite",
         },
         languages: {
             english: "English",
@@ -73,9 +102,23 @@ export const resources: Resources = {
             back: "Quay lại",
             placeholder: "Nhập số tiền",
         },
+        invite: {
+            title: "Mời bạn",
+            back: "Quay lại",
+            referralCode: "Mã giới thiệu của bạn",
+            referralLink: "Liên kết giới thiệu của bạn",
+            copy: "Sao chép",
+            yourCode: "ABC123",
+            yourLink: "https://example.com/ref/ABC123",
+            rewards: {
+                title: "Quà tặng giới thiệu",
+                description: "Mời bạn bạn và kiếm tiền! Với mỗi bạn bạn tham gia và làm cọc đầu tiên, bạn sẽ nhận được phần thưởng.",
+            },
+        },
         buttons: {
             deposit: "Nạp tiền",
             withdraw: "Rút tiền",
+            invite: "Mời bạn",
         },
         languages: {
             english: "Tiếng Anh",
@@ -99,9 +142,23 @@ export const resources: Resources = {
             back: "กลับ",
             placeholder: "ใส่จำนวนเงิน",
         },
+        invite: {
+            title: "เชิญเพื่อน",
+            back: "กลับ",
+            referralCode: "รหัสอ้างอิงของคุณ",
+            referralLink: "ลิงค์อ้างอิงของคุณ",
+            copy: "คัดลอก",
+            yourCode: "ABC123",
+            yourLink: "https://example.com/ref/ABC123",
+            rewards: {
+                title: "รางวัลอ้างอิง",
+                description: "เชิญเพื่อนและทำเงิน! สำหรับทุกเพื่อนที่เข้าร่วมและทำเงินแรกของพวกเขา คุณจะได้รับโบนัส",
+            },
+        },
         buttons: {
             deposit: "ฝากเงิน",
             withdraw: "ถอนเงิน",
+            invite: "เชิญเพื่อน",
         },
         languages: {
             english: "ภาษาอังกฤษ",
@@ -125,9 +182,24 @@ export const resources: Resources = {
             back: "Kembali",
             placeholder: "Masukkan jumlah",
         },
+        invite: {
+            title: "Undang Teman",
+            back: "Kembali",
+            referralCode: "Kode Referral Anda",
+            referralLink: "Tautan Referral Anda",
+            copy: "Salin",
+            yourCode: "ABC123",
+            yourLink: "https://example.com/ref/ABC123",
+            rewards: {
+                title: "Hadiah Referral",
+                description:
+                    "Undang teman dan dapatkan hadiah! Untuk setiap teman yang bergabung dan melakukan deposit pertama, Anda akan menerima bonus.",
+            },
+        },
         buttons: {
             deposit: "Setor",
             withdraw: "Tarik",
+            invite: "Undang",
         },
         languages: {
             english: "Bahasa Inggris",
@@ -151,9 +223,23 @@ export const resources: Resources = {
             back: "返回",
             placeholder: "输入金额",
         },
+        invite: {
+            title: "邀请朋友",
+            back: "返回",
+            referralCode: "你的推荐码",
+            referralLink: "你的推荐链接",
+            copy: "复制",
+            yourCode: "ABC123",
+            yourLink: "https://example.com/ref/ABC123",
+            rewards: {
+                title: "推荐奖励",
+                description: "邀请你的朋友并赚取奖励！每个加入并首次存款的朋友，你将获得奖励。",
+            },
+        },
         buttons: {
             deposit: "存款",
             withdraw: "提款",
+            invite: "邀请",
         },
         languages: {
             english: "英语",

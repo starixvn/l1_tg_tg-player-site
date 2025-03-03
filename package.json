@@ -17,6 +17,7 @@
     "dependencies": {
         "@telegram-apps/init-data-node": "^2.0.3",
         "@telegram-apps/sdk": "^2.11.3",
+        "axios": "^1.8.1",
         "next": "15.1.7",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",

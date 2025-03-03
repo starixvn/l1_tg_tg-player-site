@@ -1,58 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getExtendedTelegramData, ExtendedTelegramWebAppData } from "../telegram-client";
-import { retrieveLaunchParams } from "@telegram-apps/sdk";
+import { PlayerData, playerManager } from "@/lib/players/player-manager";
 
 /**
  * Component to display Telegram user data in the requested format
  */
 export default function TelegramUserData() {
-    const [telegramData, setTelegramData] = useState<ExtendedTelegramWebAppData | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const [playerData, setPlayerData] = useState<PlayerData | null>(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Get formatted Telegram data
-
-                const data = await getExtendedTelegramData();
-                setTelegramData(data);
-
-                if (data) {
-                    const { initDataRaw } = retrieveLaunchParams();
-                    const authResponse = await fetch("/api/auth", {
-                        method: "POST",
-                        headers: {
-                            Authorization: `tma ${initDataRaw}`,
-                        },
-                    });
-
-                    const authData = await authResponse.json();
-                    console.log(authData);
-                }
-            } catch (err) {
-                setError("Failed to get Telegram data");
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
+        setPlayerData(playerManager.getCurrentPlayer());
     }, []);
 
-    if (loading) {
-        return <div>Loading Telegram data...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
-    if (!telegramData) {
-        return <div>No Telegram data available. Are you running this in a Telegram Web App?</div>;
+    if (!playerData) {
+        return <div>Getting player data...</div>;
     }
 
     return (
@@ -68,7 +30,7 @@ export default function TelegramUserData() {
                     color: "black",
                 }}
             >
-                {JSON.stringify(telegramData, null, 2)}
+                {JSON.stringify(playerData, null, 2)}
             </pre>
         </div>
     );
