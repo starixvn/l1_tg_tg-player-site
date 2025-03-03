@@ -1,57 +1,47 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getFormattedTelegramData, FormattedTelegramData } from "../telegram-utils";
-
-declare global {
-    interface Window {
-        Telegram: {
-            WebApp: {
-                initData: string;
-            }
-        }
-    }
-}
+import { getExtendedTelegramData, ExtendedTelegramWebAppData } from "../telegram-client";
+import { retrieveLaunchParams } from "@telegram-apps/sdk";
 
 /**
  * Component to display Telegram user data in the requested format
  */
 export default function TelegramUserData() {
-    const [telegramData, setTelegramData] = useState<FormattedTelegramData | null>(null);
+    const [telegramData, setTelegramData] = useState<ExtendedTelegramWebAppData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Get formatted Telegram data
+
+                const data = await getExtendedTelegramData();
+                setTelegramData(data);
+
+                if (data) {
+                    const { initDataRaw } = retrieveLaunchParams();
+                    const authResponse = await fetch("/api/auth", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `tma ${initDataRaw}`,
+                        },
+                    });
+
+                    const authData = await authResponse.json();
+                    console.log(authData);
+                }
+            } catch (err) {
+                setError("Failed to get Telegram data");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchData();
     }, []);
-
-    const fetchData = async () => {
-        try {
-            // Get formatted Telegram data
-            const data = getFormattedTelegramData();
-            setTelegramData(data);
-
-            if (data) {
-
-                console.log(window.Telegram.WebApp.initData);
-                const authResponse = await fetch('/api/auth', {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `tma ${window.Telegram.WebApp.initData}`
-                    },
-                });
-
-                const authData = await authResponse.json();
-                console.log(authData);
-            }
-
-        } catch (err) {
-            setError("Failed to get Telegram data");
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) {
         return <div>Loading Telegram data...</div>;

@@ -4,12 +4,12 @@ import { useLanguage } from "../../contexts/language-context";
 import { useResources } from "../../hooks/use-resources";
 
 // Mock the language context
-jest.mock("../../../lib/contexts/language-context", () => ({
+jest.mock("../../../ui/contexts/language-context", () => ({
     useLanguage: jest.fn(),
 }));
 
 // Mock the useResources hook
-jest.mock("../../../lib/hooks/use-resources", () => ({
+jest.mock("../../../ui/hooks/use-resources", () => ({
     useResources: jest.fn(),
 }));
 

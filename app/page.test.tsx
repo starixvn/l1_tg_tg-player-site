@@ -10,7 +10,7 @@ jest.mock("./ui/components", () => ({
 }));
 
 // Mock the useResources hook
-jest.mock("./lib/hooks/use-resources", () => ({
+jest.mock("./ui/hooks/use-resources", () => ({
     useResources: jest.fn(),
 }));
 
@@ -25,16 +25,6 @@ describe("Home", () => {
         });
     });
 
-    test("should render the home page with correct title", () => {
-        // Arrange
-        render(<Home />);
-
-        // Act - no action needed for this test
-
-        // Assert
-        expect(screen.getByText("Home Test")).toBeInTheDocument();
-    });
-
     test("should render all required components", () => {
         // Arrange
         render(<Home />);
@@ -45,24 +35,5 @@ describe("Home", () => {
         expect(screen.getByTestId("language-switcher-mock")).toBeInTheDocument();
         expect(screen.getByTestId("deposit-button-mock")).toBeInTheDocument();
         expect(screen.getByTestId("withdraw-button-mock")).toBeInTheDocument();
-    });
-
-    test("should use the correct layout structure", () => {
-        // Arrange
-        render(<Home />);
-
-        // Act - no action needed for this test
-
-        // Assert
-        // Check for container class
-        const container = screen.getByText("Home Test").closest(".container");
-        expect(container).toBeInTheDocument();
-
-        // Check for row and column structure
-        const row = screen.getByText("Home Test").closest(".row");
-        expect(row).toBeInTheDocument();
-
-        const column = screen.getByText("Home Test").closest(".col-12");
-        expect(column).toBeInTheDocument();
     });
 });

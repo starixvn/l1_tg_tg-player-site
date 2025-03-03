@@ -9,7 +9,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock the useResources hook
-jest.mock("../../../lib/hooks/use-resources", () => ({
+jest.mock("../../../ui/hooks/use-resources", () => ({
     useResources: jest.fn(),
 }));
 

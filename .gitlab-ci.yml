@@ -2,3 +2,6 @@ include:
   - project: "ci/core-cicd"
     ref: main
     file: "luminet.gitlab-ci.yml"
+
+variables:
+  NODEJS_IMAGE: hub.lumigame.com/base/node:22-alpine-25h1.1
