@@ -32,7 +32,7 @@ describe("useResources", () => {
         useLanguageMock.mockImplementation(() => ({ locale: "en" }));
     });
 
-    test("should handle unknown locale by falling back to English", () => {
+    test("should fallback to English resources when locale doesn't exist", () => {
         // Arrange
         const useLanguageMock = jest.requireMock("../contexts/language-context").useLanguage;
         useLanguageMock.mockImplementation(() => ({ locale: "fr" })); // Non-existent locale
@@ -41,9 +41,7 @@ describe("useResources", () => {
         const { result } = renderHook(() => useResources());
 
         // Assert
-        // TypeScript will enforce this to be a valid resource, so it will return undefined
-        // but the component should handle this gracefully
-        expect(result.current).toBeUndefined();
+        expect(result.current).toEqual(resources.en);
 
         // Cleanup
         useLanguageMock.mockImplementation(() => ({ locale: "en" }));
