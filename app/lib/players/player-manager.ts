@@ -1,20 +1,16 @@
 import { ExtendedTelegramWebAppData } from "../telegram/telegram-client";
 
-export interface PlayerData {
-    id: number;
-    firstName: string;
-    lastName?: string;
-    username?: string;
+export interface Player {
+    id: string;
     languageCode?: string;
-    isPremium?: boolean;
     balance: number;
-    lastActive: Date;
     telegramInfo?: ExtendedTelegramWebAppData;
+    walletType: string;
 }
 
 export interface IPlayerManager {
-    getCurrentPlayer(): PlayerData | null;
-    updatePlayerData(telegramData: ExtendedTelegramWebAppData): Promise<PlayerData>;
+    getCurrentPlayer(): Player | null;
+    updatePlayerData(player: Player): Promise<Player>;
     getPlayerBalance(): number;
     setPlayerBalance(amount: number): void;
     reset(): void;
@@ -22,7 +18,7 @@ export interface IPlayerManager {
 
 export class PlayerManager implements IPlayerManager {
     private static instance: PlayerManager;
-    private currentPlayer: PlayerData | null = null;
+    private currentPlayer: Player | null = null;
 
     private constructor() {}
 
@@ -33,22 +29,14 @@ export class PlayerManager implements IPlayerManager {
         return PlayerManager.instance;
     }
 
-    public getCurrentPlayer(): PlayerData | null {
+    public getCurrentPlayer(): Player | null {
         return this.currentPlayer;
     }
 
-    public async updatePlayerData(telegramData: ExtendedTelegramWebAppData): Promise<PlayerData> {
-        const user = telegramData.tgWebAppData.user;
+    public async updatePlayerData(player: Player): Promise<Player> {
         this.currentPlayer = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            username: user.username,
-            languageCode: user.languageCode,
-            isPremium: user.isPremium,
-            balance: this.currentPlayer?.balance || 0,
-            lastActive: new Date(),
-            telegramInfo: telegramData,
+            ...player,
+            balance: this.currentPlayer?.balance || player.balance || 0,
         };
         return this.currentPlayer;
     }

@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios";
-import { PlayerApiClient, ApiResponse, AuthResponse, SignInRequest } from "./player-api-client";
+import { PlayerApiClient, ApiResponse, SignInResponse, SignInRequest } from "./player-api-client";
 
 describe("ApiClient", () => {
     let mockHttpClient: jest.Mocked<AxiosInstance>;
@@ -17,7 +17,7 @@ describe("ApiClient", () => {
     describe("signIn", () => {
         const mockAuthToken = "mock-auth-token";
         const mockRequest: SignInRequest = {
-            user: {
+            telegram: {
                 id: 123456789,
                 firstName: "John",
                 lastName: "Doe",
@@ -29,7 +29,7 @@ describe("ApiClient", () => {
             },
             walletType: "metamask",
         };
-        const mockAuthResponse: ApiResponse<AuthResponse> = {
+        const mockAuthResponse: ApiResponse<SignInResponse> = {
             success: true,
             data: {
                 token: "mock-token",

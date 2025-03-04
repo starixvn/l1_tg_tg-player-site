@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { LanguageSwitcher, DepositButton, WithdrawButton, InviteButton } from "./ui/components";
+import { LanguageSwitcher, DepositButton, WithdrawButton, InviteButton, PlayerInfo } from "./ui/components";
 import { SplashScreen } from "./ui/components/splash-screen";
 import layoutStyles from "./layout.module.scss";
-import TelegramUserData from "./lib/telegram/components/telegram-user-data";
+import { PlayerProvider } from "./ui/contexts/player-context";
 
 export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
@@ -29,10 +29,9 @@ export default function Home() {
 
             <div className="row mt-4">
                 <div className="col-12">
-                    {/* Display Telegram User Data */}
-                    <div className="mt-4">
-                        <TelegramUserData />
-                    </div>
+                    <PlayerProvider>
+                        <PlayerInfo />
+                    </PlayerProvider>
                 </div>
             </div>
         </div>

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SignInRequest } from "@/lib/api-clients/player-api-client";
-// import { appSettings } from "@/lib/app-settings";
+import { PlayerApiClient, SignInRequest } from "@/lib/api-clients/player-api-client";
 import { AuthenticationService } from "@/lib/api-clients/authentication-service";
-// import axios from "axios";
+import axios from "axios";
+import { environment } from "@/lib/environment";
 
 // Initialize authentication service with configuration
 const authService = new AuthenticationService({
-    botToken: process.env.BOT_TOKEN || "7748274701:AAFtLHxIy0-8bb8RkdLWxBo9eBcKJqzbj5U",
+    botToken: environment.botToken ?? "",
     expiresIn: 24 * 3600, // 24 hours expiration
 });
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
         // Build sign in request from validation result data
         const signInRequest: SignInRequest = {
-            user: {
+            telegram: {
                 id: validationResult.data.user.id,
                 firstName: validationResult.data.user.first_name,
                 lastName: validationResult.data.user.last_name ?? "",
@@ -39,17 +39,13 @@ export async function POST(request: NextRequest) {
             walletType: "main", // Default wallet type
         };
 
-        // Initialize API client and forward the request
-        // const apiClient = new PlayerApiClient(axios.create(), appSettings.playerApi);
-        // const authToken = authHeader.substring(4); // Remove 'tma ' prefix
-        // const response = await apiClient.signIn(authToken, signInRequest);
-
-        // if (!response.success) {
-        //     return NextResponse.json({ success: false, error: response.error ?? "Sign in failed" }, { status: 400 });
-        // }
+        //Initialize API client and forward the request
+        const apiClient = new PlayerApiClient(axios.create(), environment.playerSiteApi);
+        const authToken = authHeader.substring(4); // Remove 'tma ' prefix
+        const response = await apiClient.signIn(authToken, signInRequest);
 
         return NextResponse.json({
-            data: signInRequest,
+            player: response.data,
         });
     } catch (error) {
         console.error("Sign in error:", error);

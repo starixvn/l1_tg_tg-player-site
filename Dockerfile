@@ -11,6 +11,9 @@ RUN npm ci
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ARG TRANSFORM_CONFIG
+COPY ./.env.transform.${TRANSFORM_CONFIG} ./.env
+
 RUN npm run build
 
 # Runner stage

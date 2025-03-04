@@ -1,18 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.scss";
 import { LanguageProvider } from "./ui/contexts/language-context";
-
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -35,7 +24,7 @@ export default function RootLayout({
             <head>
                 <Script src="/c.js" strategy="beforeInteractive" />
             </head>
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
+            <body>
                 <LanguageProvider>{children}</LanguageProvider>
             </body>
         </html>

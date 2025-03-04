@@ -39,6 +39,9 @@ export type Resources = {
         languages: {
             english: string;
             vietnamese: string;
+            thai: string;
+            indonesian: string;
+            chinese: string;
         };
     };
 };
@@ -83,6 +86,9 @@ export const resources: Resources = {
         languages: {
             english: "English",
             vietnamese: "Vietnamese",
+            thai: "Thai",
+            indonesian: "Indonesian",
+            chinese: "Chinese",
         },
     },
     vi: {
@@ -123,6 +129,9 @@ export const resources: Resources = {
         languages: {
             english: "Tiếng Anh",
             vietnamese: "Tiếng Việt",
+            thai: "Thai",
+            indonesian: "Indonesian",
+            chinese: "Chinese",
         },
     },
     th: {
@@ -163,6 +172,9 @@ export const resources: Resources = {
         languages: {
             english: "ภาษาอังกฤษ",
             vietnamese: "ภาษาเวียดนาม",
+            thai: "Thai",
+            indonesian: "Indonesian",
+            chinese: "Chinese",
         },
     },
     id: {
@@ -204,6 +216,9 @@ export const resources: Resources = {
         languages: {
             english: "Bahasa Inggris",
             vietnamese: "Bahasa Vietnam",
+            thai: "Thai",
+            indonesian: "Indonesian",
+            chinese: "Chinese",
         },
     },
     zh: {
@@ -244,6 +259,9 @@ export const resources: Resources = {
         languages: {
             english: "英语",
             vietnamese: "越南语",
+            thai: "Thai",
+            indonesian: "Indonesian",
+            chinese: "Chinese",
         },
     },
 };

@@ -1,129 +1,288 @@
-import { PlayerManager } from "./player-manager";
+import { PlayerManager, playerManager, Player } from "./player-manager";
 import { ExtendedTelegramWebAppData } from "../telegram/telegram-client";
+import { User } from "@telegram-apps/sdk";
 
 describe("PlayerManager", () => {
-    let playerManager: PlayerManager;
-
+    // Reset the singleton instance before each test
     beforeEach(() => {
-        // Reset the singleton instance before each test
-        playerManager = PlayerManager.getInstance();
         playerManager.reset();
     });
 
     describe("getCurrentPlayer", () => {
         it("should return null when no player is set", () => {
-            // Arrange & Act
-            const result = playerManager.getCurrentPlayer();
+            // Arrange
+            const manager = PlayerManager.getInstance();
+
+            // Act
+            const result = manager.getCurrentPlayer();
 
             // Assert
             expect(result).toBeNull();
         });
+
+        it("should return current player when set", () => {
+            // Arrange
+            const manager = PlayerManager.getInstance();
+            const mockUser: User = {
+                id: 123,
+                firstName: "Test User",
+                languageCode: "en",
+                username: undefined,
+                lastName: undefined,
+                isPremium: undefined,
+                isBot: undefined,
+                isMiniAppUser: undefined,
+                startParam: undefined,
+            };
+            const mockTelegramData: ExtendedTelegramWebAppData = {
+                tgWebAppData: {
+                    user: mockUser,
+                    authDate: new Date().toISOString(),
+                    hash: "test_hash",
+                },
+            };
+            const mockPlayer: Player = {
+                id: "123",
+                languageCode: "en",
+                balance: 0,
+                telegramInfo: mockTelegramData,
+                walletType: "main",
+            };
+
+            // Act
+            manager.updatePlayerData(mockPlayer);
+            const result = manager.getCurrentPlayer();
+
+            // Assert
+            expect(result).toEqual(mockPlayer);
+        });
     });
 
     describe("updatePlayerData", () => {
-        it("should update player data from telegram web app data", async () => {
+        it("should update player data with new player info", async () => {
             // Arrange
+            const manager = PlayerManager.getInstance();
+            const mockUser: User = {
+                id: 123,
+                firstName: "Test User",
+                languageCode: "en",
+                username: undefined,
+                lastName: undefined,
+                isPremium: undefined,
+                isBot: undefined,
+                isMiniAppUser: undefined,
+                startParam: undefined,
+            };
             const mockTelegramData: ExtendedTelegramWebAppData = {
                 tgWebAppData: {
-                    user: {
-                        id: 123456,
-                        firstName: "John",
-                        lastName: "Doe",
-                        username: "johndoe",
-                        languageCode: "en",
-                        isPremium: true,
-                    },
-                    hash: "test_hash",
+                    user: mockUser,
                     authDate: new Date().toISOString(),
-                    chatType: "private",
-                    chatInstance: "test_instance",
-                    signature: "test_signature",
-                },
-                tgWebAppPlatform: "ios",
-                tgWebAppVersion: "6.0",
-                tgWebAppThemeParams: {
-                    accent_text_color: "#FF0000",
-                    bg_color: "#FFFFFF",
-                    button_color: "#0000FF",
-                    button_text_color: "#FFFFFF",
-                    header_bg_color: "#CCCCCC",
-                    hint_color: "#999999",
-                    link_color: "#0000FF",
-                    secondary_bg_color: "#F0F0F0",
-                    text_color: "#000000",
+                    hash: "test_hash",
                 },
             };
-
-            // Act
-            const result = await playerManager.updatePlayerData(mockTelegramData);
-
-            // Assert
-            expect(result).toMatchObject({
-                id: mockTelegramData.tgWebAppData.user.id,
-                firstName: mockTelegramData.tgWebAppData.user.firstName,
-                lastName: mockTelegramData.tgWebAppData.user.lastName,
-                username: mockTelegramData.tgWebAppData.user.username,
-                languageCode: mockTelegramData.tgWebAppData.user.languageCode,
-                isPremium: mockTelegramData.tgWebAppData.user.isPremium,
+            const mockPlayer: Player = {
+                id: "123",
+                languageCode: "en",
                 balance: 0,
                 telegramInfo: mockTelegramData,
-            });
-            expect(result.lastActive).toBeInstanceOf(Date);
-        });
-
-        it("should preserve existing balance when updating player data", async () => {
-            // Arrange
-            const mockTelegramData: ExtendedTelegramWebAppData = {
-                tgWebAppData: {
-                    user: {
-                        id: 123456,
-                        firstName: "John",
-                    },
-                    hash: "test_hash",
-                    authDate: new Date().toISOString(),
-                },
+                walletType: "main",
             };
-            await playerManager.updatePlayerData(mockTelegramData);
-            playerManager.setPlayerBalance(100);
 
             // Act
-            const result = await playerManager.updatePlayerData(mockTelegramData);
+            const result = await manager.updatePlayerData(mockPlayer);
 
             // Assert
-            expect(result.balance).toBe(100);
+            expect(result).toEqual(mockPlayer);
+        });
+
+        it("should preserve existing balance when updating player", async () => {
+            // Arrange
+            const manager = PlayerManager.getInstance();
+            const mockUser: User = {
+                id: 123,
+                firstName: "Test User",
+                languageCode: "en",
+                username: undefined,
+                lastName: undefined,
+                isPremium: undefined,
+                isBot: undefined,
+                isMiniAppUser: undefined,
+                startParam: undefined,
+            };
+            const initialPlayer: Player = {
+                id: "123",
+                languageCode: "en",
+                balance: 100,
+                telegramInfo: {
+                    tgWebAppData: {
+                        user: mockUser,
+                        authDate: new Date().toISOString(),
+                        hash: "test_hash",
+                    },
+                },
+                walletType: "main",
+            };
+            const updatedPlayer: Player = {
+                id: "123",
+                languageCode: "fr",
+                balance: 0,
+                telegramInfo: {
+                    tgWebAppData: {
+                        user: { ...mockUser, languageCode: "fr" },
+                        authDate: new Date().toISOString(),
+                        hash: "test_hash",
+                    },
+                },
+                walletType: "main",
+            };
+
+            // Act
+            await manager.updatePlayerData(initialPlayer);
+            const result = await manager.updatePlayerData(updatedPlayer);
+
+            // Assert
+            expect(result.balance).toBe(100); // Should preserve existing balance
+            expect(result.languageCode).toBe("fr"); // Should update other fields
         });
     });
 
-    describe("balance operations", () => {
-        it("should get and set player balance correctly", async () => {
+    describe("getPlayerBalance", () => {
+        it("should return 0 when no player is set", () => {
             // Arrange
-            const testAmount = 500;
+            const manager = PlayerManager.getInstance();
+
+            // Act
+            const result = manager.getPlayerBalance();
+
+            // Assert
+            expect(result).toBe(0);
+        });
+
+        it("should return current player balance", () => {
+            // Arrange
+            const manager = PlayerManager.getInstance();
+            const mockUser: User = {
+                id: 123,
+                firstName: "Test User",
+                languageCode: "en",
+                username: undefined,
+                lastName: undefined,
+                isPremium: undefined,
+                isBot: undefined,
+                isMiniAppUser: undefined,
+                startParam: undefined,
+            };
             const mockTelegramData: ExtendedTelegramWebAppData = {
                 tgWebAppData: {
-                    user: {
-                        id: 123456,
-                        firstName: "John",
-                    },
-                    hash: "test_hash",
+                    user: mockUser,
                     authDate: new Date().toISOString(),
+                    hash: "test_hash",
                 },
+            };
+            const mockPlayer: Player = {
+                id: "123",
+                languageCode: "en",
+                balance: 0,
+                telegramInfo: mockTelegramData,
+                walletType: "main",
             };
 
             // Act
-            await playerManager.updatePlayerData(mockTelegramData);
-            playerManager.setPlayerBalance(testAmount);
-            const balance = playerManager.getPlayerBalance();
+            manager.updatePlayerData(mockPlayer);
+            manager.setPlayerBalance(100);
+            const result = manager.getPlayerBalance();
 
             // Assert
-            expect(balance).toBe(testAmount);
+            expect(result).toBe(100);
+        });
+    });
+
+    describe("setPlayerBalance", () => {
+        it("should update player balance when player exists", () => {
+            // Arrange
+            const manager = PlayerManager.getInstance();
+            const mockUser: User = {
+                id: 123,
+                firstName: "Test User",
+                languageCode: "en",
+                username: undefined,
+                lastName: undefined,
+                isPremium: undefined,
+                isBot: undefined,
+                isMiniAppUser: undefined,
+                startParam: undefined,
+            };
+            const mockTelegramData: ExtendedTelegramWebAppData = {
+                tgWebAppData: {
+                    user: mockUser,
+                    authDate: new Date().toISOString(),
+                    hash: "test_hash",
+                },
+            };
+            const mockPlayer: Player = {
+                id: "123",
+                languageCode: "en",
+                balance: 0,
+                telegramInfo: mockTelegramData,
+                walletType: "main",
+            };
+
+            // Act
+            manager.updatePlayerData(mockPlayer);
+            manager.setPlayerBalance(100);
+
+            // Assert
+            expect(manager.getPlayerBalance()).toBe(100);
         });
 
-        it("should return 0 balance when no player is set", () => {
-            // Arrange & Act
-            const balance = playerManager.getPlayerBalance();
+        it("should not update balance when no player exists", () => {
+            // Arrange
+            const manager = PlayerManager.getInstance();
+
+            // Act
+            manager.setPlayerBalance(100);
 
             // Assert
-            expect(balance).toBe(0);
+            expect(manager.getPlayerBalance()).toBe(0);
+        });
+    });
+
+    describe("reset", () => {
+        it("should clear current player", () => {
+            // Arrange
+            const manager = PlayerManager.getInstance();
+            const mockUser: User = {
+                id: 123,
+                firstName: "Test User",
+                languageCode: "en",
+                username: undefined,
+                lastName: undefined,
+                isPremium: undefined,
+                isBot: undefined,
+                isMiniAppUser: undefined,
+                startParam: undefined,
+            };
+            const mockTelegramData: ExtendedTelegramWebAppData = {
+                tgWebAppData: {
+                    user: mockUser,
+                    authDate: new Date().toISOString(),
+                    hash: "test_hash",
+                },
+            };
+            const mockPlayer: Player = {
+                id: "123",
+                languageCode: "en",
+                balance: 0,
+                telegramInfo: mockTelegramData,
+                walletType: "main",
+            };
+
+            // Act
+            manager.updatePlayerData(mockPlayer);
+            manager.reset();
+
+            // Assert
+            expect(manager.getCurrentPlayer()).toBeNull();
         });
     });
 });
