@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { AuthenticationService } from "@/lib/api-clients/authentication-service";
 // import axios from "axios";
 import { environment } from "@/lib/environment";
+import { GetBalanceRequest, PlayerApiClient } from "@/lib/api-clients/player-api-client";
+import axios from "axios";
 
 // Initialize authentication service with configuration
 const authService = new AuthenticationService({
@@ -27,36 +29,25 @@ export async function GET(request: NextRequest) {
         // Get parameters from URL query
         const searchParams = request.nextUrl.searchParams;
         const playerId = searchParams.get("playerId");
-        const walletType = searchParams.get("walletType");
 
         if (!playerId) {
             return NextResponse.json({ success: false, error: "Player ID is required" }, { status: 400 });
         }
 
-        if (!walletType) {
-            return NextResponse.json({ success: false, error: "Wallet type is required" }, { status: 400 });
+        const getBalanceRequest: GetBalanceRequest = {
+            playerId: playerId,
+        };
+
+        const apiClient = new PlayerApiClient(axios.create(), environment.playerSiteApi);
+        const authToken = authHeader.substring(4); // Remove 'tma ' prefix
+        const response = await apiClient.getBalance(authToken, getBalanceRequest);
+        console.log(response)
+        if (response.code !== 200) {
+            return NextResponse.json({ success: false, error: response.error ?? "Failed to get balance" }, { status: 400 });
         }
-
-        // Build get balance request
-        // const getBalanceRequest: GetBalanceRequest = {
-        //     playerId: playerId,
-        //     walletType: walletType,
-        // };
-
-        // Initialize API client and forward the request
-        // const apiClient = new PlayerApiClient(axios.create(), environment.playerSiteApi);
-        // const authToken = authHeader.substring(4); // Remove 'tma ' prefix
-        // const response = await apiClient.getBalance(authToken, getBalanceRequest);
-
-        // if (response.code !== 200) {
-        //     return NextResponse.json({ success: false, error: response.error ?? "Failed to get balance" }, { status: 400 });
-        // }
-
-        // Generate random balance between 0 and 10000
-        const randomBalance = Math.floor(Math.random() * 10000);
-
+        
         return NextResponse.json({
-            balance: randomBalance,
+            balance: response.data?.amount,
         });
     } catch (error) {
         console.error("Get balance error:", error);

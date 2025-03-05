@@ -34,13 +34,16 @@ export interface SignInResponse {
 
 export interface GetBalanceRequest {
     playerId: string;
-    walletType: string;
+}
+
+export interface GetBalanceApiResponse {
+    data: GetBalanceResponse
 }
 
 export interface GetBalanceResponse {
-    balance: number;
+    type: string;
+    amount: number;
     currency: string;
-    code: number;
 }
 
 export interface IPlayerApiClient {
@@ -92,11 +95,12 @@ export class PlayerApiClient implements IPlayerApiClient {
     async getBalance(authToken: string, request: GetBalanceRequest): Promise<ApiResponse<GetBalanceResponse>> {
         try {
             const response = await this.httpClient.get<ApiResponse<GetBalanceResponse>>(this.getFullUrl(`/api/balance`), {
-                params: {
-                    walletType: request.walletType,
-                },
                 headers: this.getAuthHeaders(authToken),
+                params: {
+                    playerId: request.playerId
+                }
             });
+            console.log(response.data)
             return response.data;
         } catch (error) {
             return this.handleApiError(error);
