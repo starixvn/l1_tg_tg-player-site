@@ -42,11 +42,10 @@ export async function POST(request: NextRequest) {
             LangId: userData.language_code || "en-US",
             CurrencyId: "UUS",
             Inputs: {
-                GameId: gameData.gameId,
                 BrowserUserAgent: request.headers.get("user-agent") || "",
                 Domain: request.headers.get("origin") || "",
                 Location: request.headers.get("referer") || "",
-                GameTypeId: "1",
+                GameTypeId: gameData.gameId,
                 IP: request.headers.get("x-forwarded-for") || 
                     request.headers.get("x-real-ip") || 
                     "",

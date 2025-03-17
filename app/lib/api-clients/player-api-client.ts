@@ -54,7 +54,6 @@ export interface GameOpenRequest {
     LangId: string;
     CurrencyId: string;
     Inputs: {
-        GameId: string;
         BrowserUserAgent: string;
         Domain: string;
         Location: string;
