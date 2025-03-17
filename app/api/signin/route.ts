@@ -24,15 +24,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: validationResult.error || "Invalid user data" }, { status: 401 });
         }
 
-        // Parse initData from auth header
-        const initData = authHeader.slice(4); // Remove 'tma ' prefix
-        const urlParams = new URLSearchParams(decodeURIComponent(initData));
-        const startParam = urlParams.get("start_param"); // This contains the game ID
-        if (!startParam) {
-            return NextResponse.json({ success: false, error: "Missing game ID" }, { status: 400 });
-        }
-        let gameData = JSON.parse(atob(startParam));
-
         // Build sign in request from validation result data
         const signInRequest: SignInRequest = {
             telegram: {
@@ -54,8 +45,7 @@ export async function POST(request: NextRequest) {
         const response = await apiClient.signIn(authToken, signInRequest);
 
         return NextResponse.json({
-            player: response.data,
-            game: gameData
+            player: response.data
         });
     } catch (error) {
         console.error("Sign in error:", error);
