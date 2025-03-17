@@ -1,5 +1,4 @@
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
-import { GameOpenRequest } from "./player-api-client";
 
 export interface SignInResponse {
     player: {

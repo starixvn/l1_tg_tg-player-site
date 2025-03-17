@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         if (!startParam) {
             return NextResponse.json({ success: false, error: "Missing game ID" }, { status: 400 });
         }
-        let gameData = JSON.parse(atob(startParam));
+        const gameData = JSON.parse(atob(startParam));
 
         // Validate user
         const validationResult = await authService.validateAuthHeader(authHeader);
