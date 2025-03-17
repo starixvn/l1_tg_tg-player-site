@@ -36,6 +36,7 @@ export interface GetBalanceRequest {
     playerId: string;
 }
 
+
 export interface GetBalanceApiResponse {
     data: GetBalanceResponse
 }
@@ -46,9 +47,44 @@ export interface GetBalanceResponse {
     currency: string;
 }
 
+export interface GameOpenRequest {
+    TimeStamp: string;
+    Seq: string;
+    PlayerId: string;
+    LangId: string;
+    CurrencyId: string;
+    Inputs: {
+        GameId: string;
+        BrowserUserAgent: string;
+        Domain: string;
+        Location: string;
+        GameTypeId: string;
+        IP: string;
+        ReturnUrl: string;
+    }
+}
+
+
+export interface GetGameApiResponse {
+    data: GameOpenResponse
+}
+
+export interface GameOpenResponse {
+    success: boolean;
+    data: {
+        redirectUrl: string;
+        token: string;
+        seq: string;
+        errorCode: number;
+        errorMessage: string;
+        errorDescription: string;
+    }
+}
+
 export interface IPlayerApiClient {
     signIn(authToken: string, request: SignInRequest): Promise<ApiResponse<SignInResponse>>;
     getBalance(authToken: string, request: GetBalanceRequest): Promise<ApiResponse<GetBalanceResponse>>;
+    gameOpen(authToken: string, request: GameOpenRequest): Promise<ApiResponse<GameOpenResponse>>;
 }
 
 export class PlayerApiClient implements IPlayerApiClient {
@@ -101,6 +137,17 @@ export class PlayerApiClient implements IPlayerApiClient {
                 }
             });
             console.log(response.data)
+            return response.data;
+        } catch (error) {
+            return this.handleApiError(error);
+        }
+    }
+
+    async gameOpen(authToken: string, request: GameOpenRequest): Promise<ApiResponse<GameOpenResponse>> {
+        try {
+            const response = await this.httpClient.post<ApiResponse<GameOpenResponse>>(this.getFullUrl("/api/game/opengame"), request, {
+                headers: this.getAuthHeaders(authToken),
+            });
             return response.data;
         } catch (error) {
             return this.handleApiError(error);

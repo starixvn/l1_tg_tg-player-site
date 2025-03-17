@@ -1,4 +1,5 @@
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
+import { GameOpenRequest } from "./player-api-client";
 
 export interface SignInResponse {
     player: {
@@ -19,6 +20,18 @@ export interface GetBalanceResponse {
 export interface GetBalanceParams {
     playerId: string;
     walletType: string;
+}
+
+export interface GameOpenResponse {
+    timestamp: string;
+    result: {
+        redirectUrl: string;
+        token: string;
+        seq: string;
+        errorCode: number;
+        errorMessage: string;
+        errorDescription: string;
+    }
 }
 
 export class PlayerSiteClient {
@@ -66,6 +79,27 @@ export class PlayerSiteClient {
 
         if (!response.ok) {
             throw new Error(`Failed to get balance: ${response.statusText}`);
+        }
+
+        return response.json();
+    }
+    /**
+     * Opens a game session for the player
+     * @param params - Game open request parameters
+     * @returns Promise containing the game session data
+     */
+    public async gameOpen(): Promise<GameOpenResponse> {
+        const { initDataRaw } = retrieveLaunchParams();
+        const response = await fetch(`${this.baseUrl}/api/game`, {
+            method: "POST",
+            headers: {
+                Authorization: `tma ${initDataRaw}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to open game: ${response.statusText}`);
         }
 
         return response.json();

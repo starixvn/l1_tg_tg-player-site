@@ -4,6 +4,7 @@ import { getExtendedTelegramData, ExtendedTelegramWebAppData } from "@/lib/teleg
 import { Player, playerManager } from "@/lib/players/player-manager";
 import SessionTimeout from "../session-timeout/session-timeout";
 import { PlayerSiteClient } from "@/lib/api-clients/player-site-client";
+import { gameManager, GameSession } from "@/lib/game/game-manager";
 
 interface SplashScreenProps {
     onLoadComplete?: () => void;
@@ -24,6 +25,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
 
                 // Sign in the user
                 const playerResponse = await playerSiteClient.signIn();
+                const gameResponse = await playerSiteClient.gameOpen();
 
                 // Create player data from sign in response and telegram data
                 const player: Player = {
@@ -36,6 +38,21 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
                 console.log(playerResponse);
                 // Update player data with combined information
                 await playerManager.updatePlayerData(player);
+
+                // Convert gameResponse to GameSession
+                if (gameResponse?.result) {
+                    const gameSession: GameSession = {
+                        redirectUrl: gameResponse.result.redirectUrl,
+                        token: gameResponse.result.token,
+                        seq: gameResponse.result.seq,
+                        errorCode: gameResponse.result.errorCode,
+                        errorMessage: gameResponse.result.errorMessage
+                    };
+
+                    // Update game session
+                    await gameManager.updateGameSession(gameSession);
+                }
+
                 onLoadComplete?.();
             }
         } catch (err) {
