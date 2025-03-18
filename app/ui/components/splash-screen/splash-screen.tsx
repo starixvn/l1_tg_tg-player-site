@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import styles from "./splash-screen.module.scss";
 import { getExtendedTelegramData, ExtendedTelegramWebAppData } from "@/lib/telegram/telegram-client";
-import { Player, playerManager } from "@/lib/players/player-manager";
+// import { Player, playerManager } from "@/lib/players/player-manager";
 import SessionTimeout from "../session-timeout/session-timeout";
-import { PlayerSiteClient } from "@/lib/api-clients/player-site-client";
-import { gameManager, GameSession } from "@/lib/game/game-manager";
+// import { PlayerSiteClient } from "@/lib/api-clients/player-site-client";
+// import { gameManager, GameSession } from "@/lib/game/game-manager";
 
 interface SplashScreenProps {
     onLoadComplete?: () => void;
@@ -14,7 +14,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
     const [telegramData, setTelegramData] = useState<ExtendedTelegramWebAppData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const playerSiteClient = new PlayerSiteClient();
+    // const playerSiteClient = new PlayerSiteClient();
 
     const fetchData = useCallback(async (onLoadComplete?: () => void) => {
         try {
