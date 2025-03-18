@@ -12,7 +12,7 @@ export const GameFrame: React.FC = () => {
     return (
         <div className={styles.gameContainer}>
             <iframe
-                src={game.redirectUrl}
+                src={'https://hdsitlobby.sgamesuat.com/signin/direct?gameId=2'}
                 className={styles.gameFrame}
                 allow="fullscreen"
                 allowFullScreen
