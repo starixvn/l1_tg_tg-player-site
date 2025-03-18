@@ -5,9 +5,9 @@ import styles from "./game-frame.module.scss";
 export const GameFrame: React.FC = () => {
     const { game } = useGame();
 
-    if (!game?.redirectUrl) {
-        return <div>No game URL available</div>;
-    }
+    // if (!game?.redirectUrl) {
+    //     return <div>No game URL available</div>;
+    // }
 
     return (
         <div className={styles.gameContainer}>

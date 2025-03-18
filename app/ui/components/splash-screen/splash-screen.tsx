@@ -24,34 +24,34 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
                 setTelegramData(data);
 
                 // Sign in the user
-                const playerResponse = await playerSiteClient.signIn();
-                const gameResponse = await playerSiteClient.gameOpen();
+                // const playerResponse = await playerSiteClient.signIn();
+                // const gameResponse = await playerSiteClient.gameOpen();
 
                 // Create player data from sign in response and telegram data
-                const player: Player = {
-                    id: playerResponse.playerId,
-                    languageCode: data.tgWebAppData.user.languageCode,
-                    balance: playerResponse.wallet.amount ?? 0, // Initial balance is 0
-                    telegramInfo: data,
-                    walletType: playerResponse.wallet.type,
-                };
-                console.log(playerResponse);
-                // Update player data with combined information
-                await playerManager.updatePlayerData(player);
+                // const player: Player = {
+                //     id: playerResponse.playerId,
+                //     languageCode: data.tgWebAppData.user.languageCode,
+                //     balance: playerResponse.wallet.amount ?? 0, // Initial balance is 0
+                //     telegramInfo: data,
+                //     walletType: playerResponse.wallet.type,
+                // };
+                // console.log(playerResponse);
+                // // Update player data with combined information
+                // await playerManager.updatePlayerData(player);
 
-                // Convert gameResponse to GameSession
-                if (gameResponse?.result) {
-                    const gameSession: GameSession = {
-                        redirectUrl: gameResponse.result.redirectUrl,
-                        token: gameResponse.result.token,
-                        seq: gameResponse.result.seq,
-                        errorCode: gameResponse.result.errorCode,
-                        errorMessage: gameResponse.result.errorMessage
-                    };
+                // // Convert gameResponse to GameSession
+                // if (gameResponse?.result) {
+                //     const gameSession: GameSession = {
+                //         redirectUrl: gameResponse.result.redirectUrl,
+                //         token: gameResponse.result.token,
+                //         seq: gameResponse.result.seq,
+                //         errorCode: gameResponse.result.errorCode,
+                //         errorMessage: gameResponse.result.errorMessage
+                //     };
 
-                    // Update game session
-                    await gameManager.updateGameSession(gameSession);
-                }
+                //     // Update game session
+                //     await gameManager.updateGameSession(gameSession);
+                // }
 
                 onLoadComplete?.();
             }
