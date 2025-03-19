@@ -12,7 +12,7 @@ export const GameFrame: React.FC = () => {
     return (
         <div className={styles.gameContainer}>
             <iframe
-                src={'https://hdsitlobby.sgamesuat.com/signin/direct?gameId=2'}
+                src={'https://www.evo.win/en'}
                 className={styles.gameFrame}
                 allow="fullscreen"
                 allowFullScreen
