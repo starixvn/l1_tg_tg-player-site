@@ -16,12 +16,25 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
     const [error, setError] = useState<string | null>(null);
     // const playerSiteClient = new PlayerSiteClient();
 
+    const isIPhone = useCallback(() => {
+        const userAgent = navigator.userAgent.toLowerCase();
+        return userAgent.includes('iphone') || 
+               userAgent.includes('ipad') || 
+               (userAgent.includes('mac') && 'ontouchend' in document);
+    }, []);
+
     const fetchData = useCallback(async (onLoadComplete?: () => void) => {
         try {
             const data = await getExtendedTelegramData();
 
             if (data?.tgWebAppData?.user) {
                 setTelegramData(data);
+
+                if (isIPhone()) {
+                    console.log("iPhone detected, redirecting...");
+                    window.location.href = `https://staging.cryptosports.one/en`;
+                    return; 
+                }
 
                 // Sign in the user
                 // const playerResponse = await playerSiteClient.signIn();
@@ -53,6 +66,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
                 //     await gameManager.updateGameSession(gameSession);
                 // }
 
+                
+
                 onLoadComplete?.();
             }
         } catch (err) {
@@ -61,11 +76,23 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [isIPhone]);
 
     useEffect(() => {
         fetchData(onLoadComplete);
     }, [fetchData, onLoadComplete]);
+
+    // Thêm thông báo cho người dùng iPhone nếu cần
+    if (isIPhone() && !loading) {
+        return (
+            <div className={styles.splashScreen}>
+                <div className={styles.content}>
+                    <p>Redirecting to iPhone compatible version...</p>
+                    <div className={styles.spinner}></div>
+                </div>
+            </div>
+        );
+    }
 
     if (error) {
         console.error("SplashScreen error:", error);
