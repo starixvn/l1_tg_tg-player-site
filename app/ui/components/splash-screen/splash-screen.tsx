@@ -82,18 +82,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
         fetchData(onLoadComplete);
     }, [fetchData, onLoadComplete]);
 
-    // Thêm thông báo cho người dùng iPhone nếu cần
-    if (isIPhone() && !loading) {
-        return (
-            <div className={styles.splashScreen}>
-                <div className={styles.content}>
-                    <p>Redirecting to iPhone compatible version...</p>
-                    <div className={styles.spinner}></div>
-                </div>
-            </div>
-        );
-    }
-
     if (error) {
         console.error("SplashScreen error:", error);
         return <SessionTimeout onRetry={() => fetchData(onLoadComplete)} />;
