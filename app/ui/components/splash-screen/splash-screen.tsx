@@ -35,24 +35,20 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
                     telegramInfo: data,
                     walletType: playerResponse.wallet.type,
                 };
-                console.log(playerResponse);
-                // Update player data with combined information
-                await playerManager.updatePlayerData(player);
 
                 // Convert gameResponse to GameSession
-                if (gameResponse?.result) {
-                    const gameSession: GameSession = {
-                        redirectUrl: gameResponse.result.redirectUrl,
-                        token: gameResponse.result.token,
-                        seq: gameResponse.result.seq,
-                        errorCode: gameResponse.result.errorCode,
-                        errorMessage: gameResponse.result.errorMessage
-                    };
+                const gameSession: GameSession = {
+                    redirectUrl: gameResponse.result.redirectUrl,
+                    token: gameResponse.result.token,
+                    seq: gameResponse.result.seq,
+                    errorCode: gameResponse.result.errorCode,
+                    errorMessage: gameResponse.result.errorMessage
+                };
 
-                    // Update game session
-                    await gameManager.updateGameSession(gameSession);
-                }
-
+                // Update game session
+                await gameManager.updateGameSession(gameSession);
+                // Update player data with combined information
+                await playerManager.updatePlayerData(player);
                 onLoadComplete?.();
             }
         } catch (err) {
