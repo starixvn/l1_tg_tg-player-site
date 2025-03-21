@@ -3,6 +3,7 @@ import { PlayerApiClient, SignInRequest } from "@/lib/api-clients/player-api-cli
 import { AuthenticationService } from "@/lib/api-clients/authentication-service";
 import axios from "axios";
 import { environment } from "@/lib/environment";
+import * as Sentry from "@sentry/nextjs";
 
 // Initialize authentication service with configuration
 const authService = new AuthenticationService({
@@ -12,6 +13,10 @@ const authService = new AuthenticationService({
 
 export async function POST(request: NextRequest) {
     try {
+        Sentry.captureMessage("test sentry", {
+            level: "error",
+            tags: { api: "game-open" }
+        });
         // Get the auth token from the Authorization header
         const authHeader = request.headers.get("Authorization");
         if (!authHeader || !authHeader.startsWith("tma ")) {

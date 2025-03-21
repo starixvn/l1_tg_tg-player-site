@@ -3,6 +3,7 @@ import { PlayerApiClient, GameOpenRequest } from "@/lib/api-clients/player-api-c
 import { AuthenticationService } from "@/lib/api-clients/authentication-service";
 import axios from "axios";
 import { environment } from "@/lib/environment";
+import * as Sentry from "@sentry/nextjs";
 
 // Initialize authentication service
 const authService = new AuthenticationService({
@@ -14,6 +15,10 @@ export async function POST(request: NextRequest) {
     try {
         const authHeader = request.headers.get("Authorization");
         if (!authHeader || !authHeader.startsWith("tma ")) {
+            Sentry.captureMessage("Invalid or missing authorization header", {
+                level: "error",
+                tags: { api: "game-open" }
+            });
             return NextResponse.json({ success: false, error: "Invalid or missing authorization header" }, { status: 401 });
         }
 
@@ -22,6 +27,10 @@ export async function POST(request: NextRequest) {
         const urlParams = new URLSearchParams(decodeURIComponent(initData));
         const startParam = urlParams.get("start_param");
         if (!startParam) {
+            Sentry.captureMessage("Missing game ID in start_param", {
+                level: "error",
+                tags: { api: "game-open" }
+            });
             return NextResponse.json({ success: false, error: "Missing game ID" }, { status: 400 });
         }
         const gameData = JSON.parse(atob(startParam));
@@ -29,6 +38,11 @@ export async function POST(request: NextRequest) {
         // Validate user
         const validationResult = await authService.validateAuthHeader(authHeader);
         if (!validationResult.isValid || !validationResult.data?.user) {
+            Sentry.captureMessage("Invalid user data from Telegram", {
+                level: "error",
+                tags: { api: "game-open" },
+                extra: { error: validationResult.error }
+            });
             return NextResponse.json({ success: false, error: validationResult.error || "Invalid user data" }, { status: 401 });
         }
 
@@ -60,6 +74,19 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(response);
     } catch (error) {
+        // Log detailed error to Sentry
+        Sentry.captureException(error, {
+            tags: { 
+                api: "game-open",
+                environment: process.env.NODE_ENV
+            },
+            extra: {
+                headers: Object.fromEntries(request.headers),
+                url: request.url,
+                method: request.method
+            }
+        });
+
         console.error("Game open error:", error);
         return NextResponse.json({ 
             success: false, 
