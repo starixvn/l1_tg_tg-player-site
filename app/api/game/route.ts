@@ -15,9 +15,14 @@ export async function POST(request: NextRequest) {
     try {
         const authHeader = request.headers.get("Authorization");
         if (!authHeader || !authHeader.startsWith("tma ")) {
-            Sentry.captureMessage("Invalid or missing authorization header", {
+            Sentry.captureException("Invalid or missing authorization header", {
                 level: "error",
-                tags: { api: "game-open" }
+                tags: { api: "game-open" },
+                extra: {
+                    headers: Object.fromEntries(request.headers),
+                    url: request.url,
+                    method: request.method
+                }
             });
             return NextResponse.json({ success: false, error: "Invalid or missing authorization header" }, { status: 401 });
         }
@@ -27,9 +32,12 @@ export async function POST(request: NextRequest) {
         const urlParams = new URLSearchParams(decodeURIComponent(initData));
         const startParam = urlParams.get("start_param");
         if (!startParam) {
-            Sentry.captureMessage("Missing game ID in start_param", {
+            Sentry.captureException("Missing game ID in start_param", {
                 level: "error",
-                tags: { api: "game-open" }
+                tags: { api: "game-open" },
+                extra: {
+                    startParam: startParam
+                }
             });
             return NextResponse.json({ success: false, error: "Missing game ID" }, { status: 400 });
         }
@@ -38,7 +46,7 @@ export async function POST(request: NextRequest) {
         // Validate user
         const validationResult = await authService.validateAuthHeader(authHeader);
         if (!validationResult.isValid || !validationResult.data?.user) {
-            Sentry.captureMessage("Invalid user data from Telegram", {
+            Sentry.captureException("Invalid user data from Telegram", {
                 level: "error",
                 tags: { api: "game-open" },
                 extra: { error: validationResult.error }
@@ -78,12 +86,14 @@ export async function POST(request: NextRequest) {
         Sentry.captureException(error, {
             tags: { 
                 api: "game-open",
-                environment: process.env.NODE_ENV
+                environment: process.env.NODE_ENV,
+                error_type: "game_open_error"
             },
             extra: {
                 headers: Object.fromEntries(request.headers),
                 url: request.url,
-                method: request.method
+                method: request.method,
+                error: error
             }
         });
 

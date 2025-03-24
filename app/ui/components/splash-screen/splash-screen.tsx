@@ -5,6 +5,7 @@ import { Player, playerManager } from "@/lib/players/player-manager";
 import SessionTimeout from "../session-timeout/session-timeout";
 import { PlayerSiteClient } from "@/lib/api-clients/player-site-client";
 import { gameManager, GameSession } from "@/lib/game/game-manager";
+import * as Sentry from '@sentry/nextjs';
 
 interface SplashScreenProps {
     onLoadComplete?: () => void;
@@ -20,12 +21,27 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
         try {
             const data = await getExtendedTelegramData();
 
-            if (data?.tgWebAppData?.user) {
-                setTelegramData(data);
+            if (!data?.tgWebAppData?.user) {
+                throw new Error("Invalid Telegram data");
+            }
 
+            setTelegramData(data);
+
+            try {
                 // Sign in the user
                 const playerResponse = await playerSiteClient.signIn();
                 const gameResponse = await playerSiteClient.gameOpen();
+
+                // Log successful flow
+                Sentry.addBreadcrumb({
+                    category: 'auth',
+                    message: 'User authenticated and game opened',
+                    level: 'info',
+                    data: {
+                        playerId: playerResponse.playerId,
+                        gameSeq: gameResponse.result.seq
+                    }
+                });
 
                 // Create player data from sign in response and telegram data
                 const player: Player = {
@@ -50,8 +66,34 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
                 // Update player data with combined information
                 await playerManager.updatePlayerData(player);
                 onLoadComplete?.();
+            } catch (apiError) {
+                Sentry.captureException(apiError, {
+                    tags: { 
+                        component: "splash-screen",
+                        error_type: "api_error"
+                    },
+                    extra: {
+                        telegramUserId: data.tgWebAppData.user.id,
+                        timestamp: new Date().toISOString(),
+                        error: apiError
+                    }
+                });
+                throw apiError;
             }
         } catch (err) {
+            Sentry.captureException(err, {
+                tags: { 
+                    component: "splash-screen",
+                    error_type: "unhandled"
+                },
+                extra: {
+                    telegramData: telegramData ? 'present' : 'missing',
+                    loading: loading,
+                    timestamp: new Date().toISOString(),
+                    error: err
+                }
+            });
+            
             setError("Failed to get Telegram data");
             console.error(err);
         } finally {
@@ -64,7 +106,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadComplete }) => {
     }, [fetchData, onLoadComplete]);
 
     if (error) {
-        console.error("SplashScreen error:", error);
         return <SessionTimeout onRetry={() => fetchData(onLoadComplete)} />;
     }
 

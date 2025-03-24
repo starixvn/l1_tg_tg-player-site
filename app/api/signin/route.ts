@@ -13,19 +13,38 @@ const authService = new AuthenticationService({
 
 export async function POST(request: NextRequest) {
     try {
-        Sentry.captureMessage("test sentry", {
-            level: "error",
-            tags: { api: "game-open" }
-        });
         // Get the auth token from the Authorization header
         const authHeader = request.headers.get("Authorization");
         if (!authHeader || !authHeader.startsWith("tma ")) {
+            Sentry.captureException("Invalid auth header in signin", {
+                level: "error",
+                tags: { 
+                    api: "signin",
+                    error_type: "auth_header"
+                },
+                extra: {
+                    headers: Object.fromEntries(request.headers),
+                    url: request.url,
+                    method: request.method
+                }
+            });
             return NextResponse.json({ success: false, error: "Invalid or missing authorization header" }, { status: 401 });
         }
 
         // Validate the auth token using AuthenticationService
         const validationResult = await authService.validateAuthHeader(authHeader);
         if (!validationResult.isValid || !validationResult.data?.user) {
+            Sentry.captureException("Invalid Telegram validation", {
+                level: "error",
+                tags: { 
+                    api: "signin",
+                    error_type: "telegram_validation"
+                },
+                extra: {
+                    error: validationResult.error,
+                    userId: validationResult.data?.user?.id
+                }
+            });
             return NextResponse.json({ success: false, error: validationResult.error || "Invalid user data" }, { status: 401 });
         }
 
@@ -53,7 +72,24 @@ export async function POST(request: NextRequest) {
             player: response.data
         });
     } catch (error) {
+        // Log detailed error to Sentry
+        Sentry.captureException(error, {
+            tags: { 
+                api: "signin",
+                error_type: "unhandled"
+            },
+            extra: {
+                headers: Object.fromEntries(request.headers),
+                url: request.url,
+                method: request.method,
+                timestamp: new Date().toISOString()
+            }
+        });
+
         console.error("Sign in error:", error);
-        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ 
+            success: false, 
+            error: error instanceof Error ? error.message : "Internal server error" 
+        }, { status: 500 });
     }
 }

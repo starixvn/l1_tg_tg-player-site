@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { usePlayer } from "../../contexts/player-context";
 import { PlayerSiteClient } from "../../../lib/api-clients/player-site-client";
+import * as Sentry from '@sentry/nextjs';
 
 export const PlayerInfo: React.FC = () => {
     const { player } = usePlayer();
@@ -10,19 +11,61 @@ export const PlayerInfo: React.FC = () => {
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (!player) return;
+            if (!player) {
+                return;
+            }
 
             try {
                 setIsLoading(true);
                 setError(null);
                 const client = new PlayerSiteClient();
+                
+                // Add breadcrumb for balance fetch attempt
+                Sentry.addBreadcrumb({
+                    category: 'balance',
+                    message: 'Fetching player balance',
+                    level: 'info',
+                    data: {
+                        playerId: player.id,
+                        walletType: player.walletType
+                    }
+                });
+
                 const response = await client.getBalance({
                     playerId: player.id,
                     walletType: player.walletType,
                 });
+                
                 setBalance(response.balance);
+
+                // Log successful balance update
+                Sentry.addBreadcrumb({
+                    category: 'balance',
+                    message: 'Balance updated successfully',
+                    level: 'info',
+                    data: {
+                        playerId: player.id,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Failed to fetch balance");
+                const errorMessage = err instanceof Error ? err.message : "Failed to fetch balance";
+                setError(errorMessage);
+
+                // Log error to Sentry
+                Sentry.captureException(err, {
+                    tags: { 
+                        component: "player-info",
+                        error_type: "balance_fetch"
+                    },
+                    extra: {
+                        playerId: player.id,
+                        walletType: player.walletType,
+                        timestamp: new Date().toISOString(),
+                        lastBalance: balance
+                    }
+                });
             } finally {
                 setIsLoading(false);
             }
@@ -31,12 +74,21 @@ export const PlayerInfo: React.FC = () => {
         // Initial fetch
         fetchBalance();
 
-        // Set up interval for periodic updates (10 seconds)
+        // Set up interval for periodic updates
         const intervalId = setInterval(fetchBalance, 10000);
 
-        // Cleanup function to clear interval when component unmounts or player changes
-        return () => clearInterval(intervalId);
-    }, [player]);
+        // Cleanup function
+        return () => {
+            clearInterval(intervalId);
+            // Log component cleanup
+            Sentry.addBreadcrumb({
+                category: 'lifecycle',
+                message: 'PlayerInfo component unmounted',
+                level: 'info',
+                data: { playerId: player?.id }
+            });
+        };
+    }, [player, balance]);
 
     if (!player) {
         return <div>Loading player data...</div>;
